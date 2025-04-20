@@ -1,0 +1,73 @@
+DROP TABLE IF EXISTS public.cart_items CASCADE;
+DROP TABLE IF EXISTS public.completed_orders CASCADE;
+DROP TABLE IF EXISTS public.orders CASCADE;
+DROP TABLE IF EXISTS public.cart CASCADE;
+DROP TABLE IF EXISTS public.products CASCADE;
+DROP TABLE IF EXISTS public.users CASCADE;
+
+CREATE TABLE public.users (
+    id varchar(255) NOT NULL, 
+    "name" varchar(255) NOT NULL,
+    email varchar(255) NOT NULL,
+    "password" varchar(255) NOT NULL,
+    CONSTRAINT users_email_key UNIQUE (email),
+    CONSTRAINT users_pkey PRIMARY KEY (id) 
+);
+
+CREATE TABLE public.products (
+    id serial4 NOT NULL,
+    "name" varchar(255) NOT NULL,
+    brand varchar(255) NOT NULL,
+    size float NOT NULL,
+    color varchar(255) NOT NULL,
+    price float NOT NULL,
+    description text NULL,
+    image_url varchar(500) NULL,
+    category varchar(255) NULL,
+    stock_quantity int NOT NULL,
+    created_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
+    updated_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
+    CONSTRAINT products_pkey PRIMARY KEY (id)
+);
+
+CREATE TABLE public.cart (
+    id varchar(255) NOT NULL, 
+    user_id varchar(255) NULL, 
+    CONSTRAINT cart_pkey PRIMARY KEY (id)
+);
+
+ALTER TABLE public.cart ADD CONSTRAINT cart_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
+
+CREATE TABLE public.cart_items (
+    id serial4 NOT NULL,
+    cart_id varchar(255) NOT NULL,
+    product_id int4 NOT NULL,
+    quantity int4 NOT NULL,
+    created_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
+    updated_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
+    CONSTRAINT cart_items_pkey PRIMARY KEY (id)
+);
+
+CREATE TABLE public.completed_orders (
+    id bigserial NOT NULL,
+    cart_id varchar(255) NOT NULL, 
+    full_name varchar(255) NOT NULL,
+    address varchar(255) NOT NULL,
+    city varchar(255) NOT NULL,
+    items jsonb NOT NULL,
+    total numeric(10, 2) NOT NULL,
+    created_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
+    updated_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
+    CONSTRAINT completed_orders_pkey PRIMARY KEY (id)
+);
+
+CREATE TABLE public.orders (
+    id serial4 NOT NULL,
+    user_id varchar(255) NOT NULL, 
+    order_date timestamp DEFAULT CURRENT_TIMESTAMP NULL,
+    total_amount float4 NOT NULL,
+    status varchar(50) NOT NULL,
+    CONSTRAINT orders_pkey PRIMARY KEY (id)
+);
+
+ALTER TABLE public.orders ADD CONSTRAINT orders_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
