@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\AdminProductController;
+use App\Http\Controllers\AdminOrderController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\HomeController;
@@ -27,6 +28,7 @@ Route::get('/orders', [OrderController::class, 'showUserOrders'])->name('orders'
 
 // Admin Routes
 Route::prefix('admin')->name('admin.')->group(function () {
+    // Admin Products
     Route::get('/products', [AdminProductController::class, 'index'])->name('products');
     Route::get('/products/create', [AdminProductController::class, 'create'])->name('products.create');
     Route::post('/products', [AdminProductController::class, 'store'])->name('products.store');
@@ -36,4 +38,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::post('/products/{id}/archive', [AdminProductController::class, 'archive'])->name('products.archive');
     Route::get('/upload', [AdminProductController::class, 'uploadForm'])->name('products.upload');
     Route::post('/upload', [AdminProductController::class, 'uploadStore'])->name('products.upload.store');
+    
+    // Admin Orders
+    Route::get('/orders', [AdminOrderController::class, 'index'])->name('orders');
+    Route::get('/orders/{id}', [AdminOrderController::class, 'show'])->name('orders.show');
 });

@@ -31,6 +31,20 @@ class OrderModel {
         return $orders;
     }
     
+    public static function getOrdersByIds($order_ids) {
+        if (empty($order_ids)) {
+            return collect();
+        }
+        
+        $orders = DB::table('completed_orders')->whereIn('id', $order_ids)->get();
+        
+        foreach ($orders as $order) {
+            $order->items = json_decode($order->items);
+        }
+        
+        return $orders;
+    }
+    
     public static function getAll() {
         $orders = DB::select('SELECT * FROM completed_orders ORDER BY created_at DESC');
         

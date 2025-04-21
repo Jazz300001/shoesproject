@@ -68,49 +68,59 @@ class CartController extends Controller
         return redirect()->route('cart.index')->with('success', 'Item removed from the cart');
     }
     
-    public function checkout(Request $request)
-    {
-        $cartId = Cookie::get('cart_id');
-        if (!$cartId) {
-            return redirect()->back()->with('error', 'No cart found.');
-        }
-        
-        $cartItems = CartItemModel::getItems($cartId);
-        if (empty($cartItems)) {
-            return redirect()->back()->with('error', 'Your cart is empty.');
-        }
 
-        $totalAmount = CartItemModel::getTotalAmount($cartId);
-        $itemsArray = CartItemModel::getItemsForOrder($cartId);
+// Update the checkout method in CartController.php
 
-        DB::beginTransaction();
-
-        try {
-            // Customer info
-            $customerInfo = [
-                'fullname' => $request->input('fullname'),
-                'address' => $request->input('address'),
-                'city' => $request->input('city')
-            ];
-            
-            // Create order
-            OrderModel::placeOrder($cartId, $itemsArray, $totalAmount, $customerInfo);
-
-            // Update product stock
-            foreach ($cartItems as $item) {
-                ProductModel::decreaseStock($item->product_id, $item->quantity);
-            }
-
-            // Clear cart
-            CartItemModel::clearCart($cartId);
-            CartModel::deleteCart($cartId);
-            
-            DB::commit();
-
-            return redirect()->route('orders')->with('success', 'Order placed successfully!');
-        } catch (\Exception $e) {
-            DB::rollback();
-            return redirect()->back()->with('error', 'Error placing the order: ' . $e->getMessage());
-        }
+public function checkout(Request $request)
+{
+    $cartId = Cookie::get('cart_id');
+    if (!$cartId) {
+        return redirect()->back()->with('error', 'No cart found.');
     }
+    
+    $cartItems = CartItemModel::getItems($cartId);
+    if (empty($cartItems)) {
+        return redirect()->back()->with('error', 'Your cart is empty.');
+    }
+
+    $totalAmount = CartItemModel::getTotalAmount($cartId);
+    $itemsArray = CartItemModel::getItemsForOrder($cartId);
+
+    DB::beginTransaction();
+
+    try {
+        // Customer info
+        $customerInfo = [
+            'fullname' => $request->input('fullname'),
+            'address' => $request->input('address'),
+            'city' => $request->input('city')
+        ];
+        
+        // Create order
+        $orderId = OrderModel::placeOrder($cartId, $itemsArray, $totalAmount, $customerInfo);
+
+        // Store order ID in session
+        $completedOrders = session('completed_orders', []);
+        $completedOrders[] = $orderId;
+        session(['completed_orders' => $completedOrders]);
+
+        // Update product stock
+        foreach ($cartItems as $item) {
+            ProductModel::decreaseStock($item->product_id, $item->quantity);
+        }
+
+        // Clear cart items but keep the cart ID
+        CartItemModel::clearCart($cartId);
+        DB::commit();
+        
+        return redirect()->route('orders')->with('success', 'Order placed successfully!');
+        
+        // Don't delete the cart or cart_id cookie
+        // CartModel::deleteCart($cartId);
+        // Cookie::queue(Cookie::forget('cart_id'));
+    } catch (\Exception $e) {
+        DB::rollback();
+        return redirect()->back()->with('error', 'Error placing the order: ' . $e->getMessage());
+    }
+}
 }

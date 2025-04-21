@@ -9,7 +9,7 @@
                     <h4 class="mb-0">Checkout</h4>
                 </div>
                 <div class="card-body">
-                    <form action="{{ route('checkout.process') }}" method="POST">
+                    <form action="{{ route('cart.checkout') }}" method="POST">
                         @csrf
                         
                         <h5 class="mb-3">1. Shipping Information</h5>
@@ -31,58 +31,17 @@
                             
                             <div class="col-md-6">
                                 <label for="zipcode" class="form-label">Zip Code</label>
-                                <input type="text" class="form-control" id="zipcode" name="zipcode" required>
+                                <input type="text" class="form-control" id="zipcode" name="zipcode">
                             </div>
                             
                             <div class="col-md-6">
                                 <label for="email" class="form-label">Email</label>
-                                <input type="email" class="form-control" id="email" name="email" required>
+                                <input type="email" class="form-control" id="email" name="email">
                             </div>
                             
                             <div class="col-md-6">
                                 <label for="phone" class="form-label">Phone</label>
-                                <input type="tel" class="form-control" id="phone" name="phone" required>
-                            </div>
-                        </div>
-                        
-                        <hr class="my-4">
-                        <h5 class="mb-3">2. Payment Method</h5>
-                        
-                        <div class="my-3">
-                            <div class="form-check">
-                                <input id="credit" name="paymentMethod" type="radio" class="form-check-input" checked required>
-                                <label class="form-check-label" for="credit">Credit card</label>
-                            </div>
-                            <div class="form-check">
-                                <input id="debit" name="paymentMethod" type="radio" class="form-check-input" required>
-                                <label class="form-check-label" for="debit">Debit card</label>
-                            </div>
-                            <div class="form-check">
-                                <input id="paypal" name="paymentMethod" type="radio" class="form-check-input" required>
-                                <label class="form-check-label" for="paypal">PayPal</label>
-                            </div>
-                        </div>
-                        
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <label for="cc-name" class="form-label">Name on card</label>
-                                <input type="text" class="form-control" id="cc-name" placeholder="" required>
-                                <small class="text-muted">Full name as displayed on card</small>
-                            </div>
-                            
-                            <div class="col-md-6">
-                                <label for="cc-number" class="form-label">Credit card number</label>
-                                <input type="text" class="form-control" id="cc-number" placeholder="" required>
-                            </div>
-                            
-                            <div class="col-md-3">
-                                <label for="cc-expiration" class="form-label">Expiration</label>
-                                <input type="text" class="form-control" id="cc-expiration" placeholder="MM/YY" required>
-                            </div>
-                            
-                            <div class="col-md-3">
-                                <label for="cc-cvv" class="form-label">CVV</label>
-                                <input type="text" class="form-control" id="cc-cvv" placeholder="" required>
+                                <input type="tel" class="form-control" id="phone" name="phone">
                             </div>
                         </div>
                         
@@ -106,6 +65,7 @@
                                 <div>
                                     <h6 class="my-0">{{ $item->name }} x {{ $item->quantity }}</h6>
                                     <small class="text-muted">{{ $item->brand }} | Size {{ $item->size }}</small>
+                                    <small class="text-muted d-block">Color: {{ $item->color }}</small>
                                 </div>
                                 <span class="text-muted">${{ number_format($item->price * $item->quantity, 2) }}</span>
                             </li>

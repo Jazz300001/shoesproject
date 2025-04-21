@@ -9,7 +9,7 @@ class OrderController extends Controller
 {
     public function showUserOrders(Request $request)
     {
-        $cartId = $request->cookie('cart_id'); // Get cart_id from cookie
+        $cartId = $request->cookie('cart_id'); 
     
         if (!$cartId) {
             return view('orders', ['orders' => collect()]);
@@ -18,5 +18,6 @@ class OrderController extends Controller
         $orders = OrderModel::getOrdersByCart($cartId);
     
         return view('orders', compact('orders'));
+        
     }
 }

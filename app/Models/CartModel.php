@@ -14,7 +14,6 @@ class CartModel {
             }
         }
         
-        // Create new cart with random ID
         $newCartId = Str::random(40);
         DB::insert('INSERT INTO cart (id) VALUES (?)', [$newCartId]);
         return DB::selectOne('SELECT * FROM cart WHERE id = ?', [$newCartId]);

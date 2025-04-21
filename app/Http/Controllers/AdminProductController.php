@@ -22,7 +22,7 @@ class AdminProductController extends Controller
 
     public function create()
     {
-        return view('admin-create', ['product' => null]);
+        return view('admin-products-create', ['product' => null]);
     }
 
     public function store(Request $request)
@@ -52,7 +52,7 @@ class AdminProductController extends Controller
             abort(404);
         }
 
-        return view('admin-create', compact('product'));
+        return view('admin-products-create', compact('product'));
     }
 
     public function update(Request $request, $id)
