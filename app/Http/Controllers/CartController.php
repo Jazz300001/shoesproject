@@ -29,22 +29,22 @@ class CartController extends Controller
     {
         $cartId = Cookie::get('cart_id');
         
-        // Create or get cart
+        
         $cart = CartModel::getOrCreateCart($cartId);
         $cartId = $cart->id;
         
-        // Set cookie if needed
+        
         if (!Cookie::get('cart_id')) {
-            Cookie::queue('cart_id', $cartId, 60 * 24 * 30); // 30 days
+            Cookie::queue('cart_id', $cartId, 60 * 24 * 30); 
         }
         
-        // Check if product exists
+        
         $product = ProductModel::find($productId);
         if (!$product) {
             return redirect()->back()->with('error', 'Product not found.');
         }
         
-        // Add to cart
+        
         CartItemModel::addItem($cartId, $productId);
            
         return redirect()->route('cart.index')->with('success', "{$product->name} has been added to your cart!");
@@ -69,8 +69,6 @@ class CartController extends Controller
     }
     
 
-// Update the checkout method in CartController.php
-
 public function checkout(Request $request)
 {
     $cartId = Cookie::get('cart_id');
@@ -89,35 +87,32 @@ public function checkout(Request $request)
     DB::beginTransaction();
 
     try {
-        // Customer info
+        
         $customerInfo = [
             'fullname' => $request->input('fullname'),
             'address' => $request->input('address'),
             'city' => $request->input('city')
         ];
         
-        // Create order
+       
         $orderId = OrderModel::placeOrder($cartId, $itemsArray, $totalAmount, $customerInfo);
 
-        // Store order ID in session
+       
         $completedOrders = session('completed_orders', []);
         $completedOrders[] = $orderId;
         session(['completed_orders' => $completedOrders]);
 
-        // Update product stock
+    
         foreach ($cartItems as $item) {
             ProductModel::decreaseStock($item->product_id, $item->quantity);
         }
 
-        // Clear cart items but keep the cart ID
+
         CartItemModel::clearCart($cartId);
         DB::commit();
         
         return redirect()->route('orders')->with('success', 'Order placed successfully!');
         
-        // Don't delete the cart or cart_id cookie
-        // CartModel::deleteCart($cartId);
-        // Cookie::queue(Cookie::forget('cart_id'));
     } catch (\Exception $e) {
         DB::rollback();
         return redirect()->back()->with('error', 'Error placing the order: ' . $e->getMessage());

@@ -52,7 +52,6 @@ class CartItemModel {
             return [
                 'product_id' => $item->product_id,
                 'name' => $item->name,
-
                 'quantity' => $item->quantity,
                 'price' => $item->price,
             ];

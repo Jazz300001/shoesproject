@@ -55,7 +55,6 @@
                                 <a href="{{ route('admin.products.edit', $product->id) }}" class="btn btn-sm btn-outline-primary">Edit</a>
                                 <form action="{{ route('admin.products.archive', $product->id) }}" method="POST" class="d-inline">
                                     @csrf
-                                    <button type="submit" class="btn btn-sm btn-outline-warning">Archive</button>
                                 </form>
                                 <form action="{{ route('admin.products.destroy', $product->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this product?');">
                                     @csrf

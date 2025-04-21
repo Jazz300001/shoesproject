@@ -11,38 +11,69 @@
                 <div class="alert alert-success">{{ session('success') }}</div>
             @endif
             
-            <div class="table-responsive">
-                <table class="table table-bordered table-striped">
-                    <thead>
-                        <tr>
-                            <th>Order ID</th>
-                            <th>Customer</th>
-                            <th>Date</th>
-                            <th>Total</th>
-                            <th>Address</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($orders as $order)
-                            <tr>
-                                <td>#{{ $order->id }}</td>
-                                <td>{{ $order->full_name }}</td>
-                                <td>{{ date('M d, Y H:i', strtotime($order->created_at)) }}</td>
-                                <td>${{ number_format($order->total, 2) }}</td>
-                                <td>{{ $order->address }}, {{ $order->city }}</td>
-                                <td>
-                                    <a href="{{ route('admin.orders.show', $order->id) }}" class="btn btn-sm btn-info">View Details</a>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="6" class="text-center">No orders found</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
+            @if(count($orders) > 0)
+                @foreach($orders as $order)
+                    <div class="card mb-4">
+                        <div class="card-header bg-light">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <strong>Order #{{ $order->id }}</strong>
+                                </div>
+                                <div class="col-md-4 text-md-center">
+                                    <span>{{ date('M d, Y H:i', strtotime($order->created_at)) }}</span>
+                                </div>
+                                <div class="col-md-4 text-md-end">
+                                    <span class="badge bg-success">Completed</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <h5>Customer Information</h5>
+                                    <p>{{ $order->full_name }}<br>
+                                    {{ $order->address }}<br>
+                                    {{ $order->city }}</p>
+                                </div>
+                                <div class="col-md-6 text-md-end">
+                                    <h5>Order Total</h5>
+                                    <h3>${{ number_format($order->total, 2) }}</h3>
+                                </div>
+                            </div>
+                            
+                            <h5>Order Items</h5>
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>Product</th>
+                                            <th>Size</th>
+                                            <th>Price</th>
+                                            <th>Quantity</th>
+                                            <th>Total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach($order->items as $item)
+                                            <tr>
+                                                <td>{{ $item->name }}</td>
+                                                <td>{{ $item->size ?? 'N/A' }}</td>
+                                                <td>${{ number_format($item->price, 2) }}</td>
+                                                <td>{{ $item->quantity }}</td>
+                                                <td>${{ number_format($item->price * $item->quantity, 2) }}</td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            @else
+                <div class="alert alert-info">
+                    There are no orders in the system.
+                </div>
+            @endif
         </div>
     </div>
 </div>

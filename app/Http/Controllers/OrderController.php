@@ -20,4 +20,10 @@ class OrderController extends Controller
         return view('orders', compact('orders'));
         
     }
+    public function show(Request $request)
+{
+    $orders = OrderModel::getAll();
+
+    return view('admin-orders', compact('orders'));
+}
 }
